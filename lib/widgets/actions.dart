@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class HomeActions extends StatelessWidget {
+class FilterActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
