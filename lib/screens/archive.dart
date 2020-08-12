@@ -5,12 +5,12 @@ import 'package:todo_app/widgets/actions.dart';
 import 'package:todo_app/widgets/todo_list.dart';
 import 'package:todo_app/models/todo.dart';
 
-class TopPage extends StatefulWidget {
+class ArchivePage extends StatefulWidget {
   @override
-  _TopPage createState() => _TopPage();
+  _ArchivePage createState() => _ArchivePage();
 }
 
-class _TopPage extends State<TopPage> {
+class _ArchivePage extends State<ArchivePage> {
   // 空配列で初期化
   List<Todo> todos = [];
 
@@ -42,21 +42,14 @@ class _TopPage extends State<TopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todo List', style: TextStyle(color: Colors.white)),
+        title: Text('Archived Todos', style: TextStyle(color: Colors.white)),
       ),
       body: Column(
         children: [
           FilterActions(),
-          TodoList(todos: todos.where((todo) => todo.done).toList()),
+          TodoList(todos: todos.where((todo) => !todo.done).toList()),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            print('todo create');
-          },
-          backgroundColor: Colors.green,
-          child: Icon(Icons.add)),
-
     );
   }
 }

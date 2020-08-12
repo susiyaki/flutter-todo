@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/screens/top.dart';
+import 'package:todo_app/app.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(TodoApp());
 }
 
-class MyApp extends StatelessWidget {
+
+class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.indigo,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyTopPage(),
+      home: RootWidget(),
     );
   }
 }
