@@ -56,7 +56,6 @@ class _TopPage extends State<TopPage> {
           },
           backgroundColor: Colors.green,
           child: Icon(Icons.add)),
-
     );
   }
 }
