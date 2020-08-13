@@ -47,7 +47,7 @@ class _ArchivePage extends State<ArchivePage> {
       body: Column(
         children: [
           FilterActions(),
-          TodoList(todos: todos.where((todo) => !todo.done).toList()),
+          TodoList(todos: todos.where((todo) => todo.done).toList()),
         ],
       ),
     );

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/models/todo.dart';
+import 'package:todo_app/widgets/todo_item.dart';
 
 class TodoList extends StatefulWidget {
   // immutableなwidgetなので、finalで固定
   final List<Todo> todos;
+  final void Function(int index, Todo todo) archiveTodo;
+  final void Function(int index, Todo todo) unarchiveTodo;
 
   // todosを受け取ってセット
-  TodoList({Key key, this.todos}) : super(key: key);
+  TodoList({Key key, this.todos, this.archiveTodo, this.unarchiveTodo})
+      : super(key: key);
 
   @override
   _TodoList createState() => _TodoList();
@@ -19,60 +23,42 @@ class _TodoList extends State<TodoList> {
     return Flexible(
         child: ListView.builder(
             itemBuilder: (BuildContext context, int index) {
-              return TodoItem(
-                  title: widget.todos[index].title,
-                  description: widget.todos[index].description);
+              // Dismissible -> swipe削除を提供してくれる
+              return Dismissible(
+                background: stackBehindDismiss(),
+                key: ObjectKey(widget.todos[index].id),
+                child: TodoItem(
+                    title: widget.todos[index].title,
+                    description: widget.todos[index].description),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  var todo = widget.todos.elementAt(index);
+
+                  widget.archiveTodo(index, todo);
+
+                  // 削除と同時に画面下にundoのアクションを描画
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text("Todo archived"),
+                      action: SnackBarAction(
+                          label: "UNDO",
+                          onPressed: () {
+                            widget.unarchiveTodo(index, todo);
+                          })));
+                },
+              );
             },
             itemCount: widget.todos.length));
   }
 }
 
-class TodoItem extends StatefulWidget {
-  final String title;
-  final String description;
-
-  TodoItem({Key key, this.title, this.description}) : super(key: key);
-
-  @override
-  _TodoItem createState() => _TodoItem();
-}
-
-class _TodoItem extends State<TodoItem> {
-  var open = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(width: 0.2, color: Colors.grey))),
-        child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  open = !open;
-                });
-              },
-              child: Column(children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(widget.title,
-                        style: TextStyle(
-                            fontSize: 18,
-                            letterSpacing: 0.8,
-                            fontWeight: FontWeight.w500)),
-                    open
-                        ? Icon(Icons.arrow_drop_down)
-                        : Icon(Icons.arrow_drop_up)
-                  ],
-                ),
-                open
-                    ? Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Text(widget.description))
-                    : Container()
-              ]),
-            )));
-  }
+Widget stackBehindDismiss() {
+  return Container(
+    alignment: Alignment.centerRight,
+    padding: EdgeInsets.only(right: 20.0),
+    color: Colors.red,
+    child: Icon(
+      Icons.delete,
+      color: Colors.white,
+    ),
+  );
 }

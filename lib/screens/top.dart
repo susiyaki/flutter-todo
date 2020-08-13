@@ -32,6 +32,47 @@ class _TopPage extends State<TopPage> {
     }
   }
 
+  void archiveTodo(int index, Todo todo) async {
+    var todoId = todo.id;
+
+    todo.done = true;
+    var response = await http.put('http://localhost:3000/api/v1/todos/$todoId',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(todo.toJson()));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        todos.removeAt(index);
+      });
+    }
+  }
+
+  void unarchiveTodo(int index, Todo todo) async {
+    todo.done = false;
+    var response = await http.put('http://localhost:3000/api/v1/todos/$index',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(todo.toJson()));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        todos.insert(index, todo);
+      });
+    }
+  }
+
+  void addTodo() async {
+    var todo = new Todo(title: 'flutter3', description: 'desc', done: false);
+    var response = await http.post('http://localhost:3000/api/v1/todos',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(todo.toJson()));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        todos.insert(todos.length, todo);
+      });
+    }
+  }
+
   @override
   initState() {
     super.initState();
@@ -47,12 +88,21 @@ class _TopPage extends State<TopPage> {
       body: Column(
         children: [
           FilterActions(),
-          TodoList(todos: todos.where((todo) => todo.done).toList()),
+          TodoList(
+            todos: todos
+                .where(
+                  (todo) => !todo.done,
+                )
+                .toList(),
+            archiveTodo: archiveTodo,
+            unarchiveTodo: unarchiveTodo,
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            print('todo create');
+            print('tapped');
+            addTodo();
           },
           backgroundColor: Colors.green,
           child: Icon(Icons.add)),
